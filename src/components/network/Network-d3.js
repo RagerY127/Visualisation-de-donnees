@@ -72,11 +72,16 @@ class NetworkD3 {
         //    })
     }
 
-    renderVis = function (visData, controllerMethods){
+    renderVis = function (visData, layoutName, controllerMethods){
+        this.nodesG.selectAll("*").remove();
+        this.linksG.selectAll("*").remove();
         // The force simulation mutates links and nodes, so create a copy
         // so that re-evaluating this cell produces the same result.
         const links = visData.links.map(d => ({...d}));
         const nodes = visData.nodes.map(d => ({...d}));
+        // build an object by Id for direct access to nodes
+        const nodeById = {}
+        nodes.forEach(node=>{nodeById[node.id] = node})
 
         const link = this.linksG.selectAll("line")
             .data(links, d=>d.id)
@@ -93,27 +98,51 @@ class NetworkD3 {
             .text(d=>d.node)
         ;
 
-        // build a layout by simulating forces forces
-        const simulation = d3.forceSimulation(nodes)
-            .force("center", d3.forceCenter(this.width/2, this.height/2).strength(1)) // center position of global mass, default strength is 1
-            // .force("link", d3.forceLink(links).id(d => d.id).distance(30)) // avg links distance, default is 30
-            // .force("charge", d3.forceManyBody().strength(-100)) // mutual gravity or repulsion (if negative), default strength is -100
-            // .force("x", d3.forceX(this.width/2).strength(1)) // apply a x-axis force toward the given x position, default strength is 1
-            // .force("y", d3.forceY(this.height/2).strength(1)) // apply a y-axis force toward the given y position, default strength is 1
-        ;
+        if(layoutName==="d3-force"){
+            // build a layout by simulating forces forces
+            const simulation = d3.forceSimulation(nodes)
+                .force("center", d3.forceCenter(this.width/2, this.height/2).strength(1)) // center position of global mass, default strength is 1
+                // .force("charge", d3.forceManyBody().strength(-100)) // mutual gravity or repulsion (if negative), default strength is -100
+                // .force("x", d3.forceX(this.width/2).strength(1)) // apply a x-axis force toward the given x position, default strength is 1
+                // .force("y", d3.forceY(this.height/2).strength(1)) // apply a y-axis force toward the given y position, default strength is 1
+                // .force("link", d3.forceLink(links).id(d => d.id).distance(30)) // avg links distance, default is 30
+            ;
 
-        // Set the position attributes of links and nodes each time the simulation ticks.
-        simulation.on("tick", () => {
+            // Set the position attributes of links and nodes each time the simulation ticks.
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+            });
+        }else if (layoutName==="third-party"){
+            const xScale = d3.scaleLinear().range([0,this.width]).domain([-1,1])
+            const yScale = d3.scaleLinear().range([0,this.height]).domain([-1,1])
             link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
+                .attr("x1", d => {
+                    const x = nodeById[d.source].x;
+                    const xscale = xScale(x);
+                    return xscale
+                })
+                .attr("y1", d => yScale(nodeById[d.source].y))
+                .attr("x2", d => {
+                    return xScale(nodeById[d.target].x)
+                })
+                .attr("y2", d => yScale(nodeById[d.target].y))
+            ;
 
             node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        });
+                .attr("cx", d => {
+                    return xScale(d.x);
+                })
+                .attr("cy", d => yScale(d.y))
+            ;
+        }
     }
 
     clear = function(){

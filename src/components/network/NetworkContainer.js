@@ -8,6 +8,7 @@ import NetworkD3 from './Network-d3';
 
 function NetworkContainer(){
     const visData = useSelector(state =>state.dataSet)
+    const layout = useSelector(state => state.layout)
     const dispatch = useDispatch();
 
     // every time the component re-render
@@ -64,8 +65,9 @@ function NetworkContainer(){
             handleOnEvent1: handleOnEvent1,
             handleOnEvent2: handleOnEvent2,
         }
-        visD3.renderVis(visData,controllerMethods);
-    },[visData,dispatch]);// if dependencies, useEffect is called after each data update, in our case only visData changes.
+        // visD3.clear()
+        visD3.renderVis(visData, layout.layoutName, controllerMethods);
+    },[visData,layout,dispatch]);// if dependencies, useEffect is called after each data update, in our case only visData changes.
 
     return(
         <div ref={divContainerRef} className="networkDivContainer">
