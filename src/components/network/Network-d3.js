@@ -121,27 +121,7 @@ class NetworkD3 {
                     .attr("cy", d => d.y);
             });
         }else if (layoutName==="third-party"){
-            const xScale = d3.scaleLinear().range([0,this.width]).domain([-1,1])
-            const yScale = d3.scaleLinear().range([0,this.height]).domain([-1,1])
-            link
-                .attr("x1", d => {
-                    const x = nodeById[d.source].x;
-                    const xscale = xScale(x);
-                    return xscale
-                })
-                .attr("y1", d => yScale(nodeById[d.source].y))
-                .attr("x2", d => {
-                    return xScale(nodeById[d.target].x)
-                })
-                .attr("y2", d => yScale(nodeById[d.target].y))
-            ;
-
-            node
-                .attr("cx", d => {
-                    return xScale(d.x);
-                })
-                .attr("cy", d => yScale(d.y))
-            ;
+            
         }
     }
 
