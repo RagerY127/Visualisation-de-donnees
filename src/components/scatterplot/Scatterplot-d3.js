@@ -216,6 +216,21 @@ class ScatterplotD3 {
         this.brushG.call(this.brush);
     }
 
+    clearBrush = function(){
+        // Clear the brush selection without triggering events
+        if (this.brushG) {
+            // Temporarily disable brush events
+            const savedOnEnd = this.brush.on("end");
+            this.brush.on("end", null);
+            
+            // Clear the brush
+            this.brushG.call(this.brush.move, null);
+            
+            // Restore the event handler
+            this.brush.on("end", savedOnEnd);
+        }
+    }
+
     clear = function(){
         d3.select(this.el).selectAll("*").remove();
     }

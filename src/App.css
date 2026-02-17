@@ -7,6 +7,33 @@
     position: relative;
 }
 
+.clear-selections-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: #d32f2f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+    z-index: 1000;
+    transition: all 0.2s;
+}
+
+.clear-selections-button:hover {
+    background: #b71c1c;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
+    transform: translateY(-1px);
+}
+
+.clear-selections-button:active {
+    transform: translateY(0);
+}
+
 .global-hierarchy-controls {
     position: fixed;
     top: 10px;

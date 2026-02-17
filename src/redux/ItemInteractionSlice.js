@@ -7,15 +7,16 @@ export const itemInteractionSlice = createSlice({
     selectedItems: [],  // Items selected via click or brush
     hoveredItem: {},    // Item currently hovered
     brushedItems: [],   // Items selected via brush interaction
+    shouldClearBrush: false, // Flag to trigger brush clearing
   },
   reducers: {
     // Set selected items (for click interaction)
     setSelectedItems: (state, action) => {
-      return {...state, selectedItems: action.payload}
+      return {...state, selectedItems: action.payload, shouldClearBrush: false}
     },
     // Set brushed items (for brush interaction)
     setBrushedItems: (state, action) => {
-      return {...state, brushedItems: action.payload, selectedItems: action.payload}
+      return {...state, brushedItems: action.payload, selectedItems: action.payload, shouldClearBrush: false}
     },
     // Set hovered item
     setHoveredItem: (state, action) => {
@@ -23,7 +24,11 @@ export const itemInteractionSlice = createSlice({
     },
     // Clear all selections
     clearSelections: (state) => {
-      return {...state, selectedItems: [], brushedItems: []}
+      return {...state, selectedItems: [], brushedItems: [], shouldClearBrush: true}
+    },
+    // Reset clear brush flag
+    resetClearBrushFlag: (state) => {
+      return {...state, shouldClearBrush: false}
     },
   },
 })
@@ -33,7 +38,8 @@ export const {
   setSelectedItems, 
   setBrushedItems, 
   setHoveredItem, 
-  clearSelections 
+  clearSelections,
+  resetClearBrushFlag
 } = itemInteractionSlice.actions
 
 export default itemInteractionSlice.reducer

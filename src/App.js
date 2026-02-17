@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 // here import other dependencies
 import { getDataSet } from './redux/DataSetSlice'
+import { clearSelections } from './redux/ItemInteractionSlice'
 import ScatterplotContainer from './components/scatterplot/ScatterplotContainer';
 import HierarchyContainer from './components/hierarchy/HierarchyContainer';
 
@@ -27,8 +28,17 @@ function App() {
       ? selectedItems.map(item => item.name || item.communityname || `Community ${item.index}`).join(', ')
       : '';
   
+  const handleClearSelections = () => {
+    dispatch(clearSelections());
+  };
+  
   return (
     <div className="App">
+        {/* Clear button at top left */}
+        <button className="clear-selections-button" onClick={handleClearSelections}>
+          Clear All
+        </button>
+        
         {/* Layout controls at top right */}
         <div className="global-hierarchy-controls">
           <button 

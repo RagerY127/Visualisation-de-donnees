@@ -41,7 +41,7 @@ class HierarchyD3 {
             
             if (!stateMap.has(stateId)) {
                 stateMap.set(stateId, {
-                    name: `State ${stateId}`,
+                    name: `${stateId}`,  // Only show the number
                     state: stateId,
                     children: []
                 });
@@ -180,7 +180,8 @@ class HierarchyD3 {
             })
             .attr("text-anchor", "middle")
             .text(d => d.data.name)
-            .attr("font-size", "10px")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
             .attr("fill", "black");
     }
 
@@ -240,7 +241,8 @@ class HierarchyD3 {
             .append("text")
             .attr("text-anchor", "middle")
             .text(d => d.data.name)
-            .attr("font-size", d => d.depth === 0 ? "14px" : "10px")
+            .attr("font-size", d => d.depth === 0 ? "14px" : "12px")
+            .attr("font-weight", d => d.depth === 1 ? "bold" : "normal")
             .attr("fill", "black");
     }
 
@@ -305,7 +307,8 @@ class HierarchyD3 {
             .attr("dy", -10)
             .attr("text-anchor", "middle")
             .text(d => d.depth <= 1 ? d.data.name : "")
-            .attr("font-size", "10px");
+            .attr("font-size", d => d.depth === 1 ? "12px" : "10px")
+            .attr("font-weight", d => d.depth === 1 ? "bold" : "normal");
     }
 
     // Main render function

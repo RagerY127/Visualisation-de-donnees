@@ -5,11 +5,12 @@ import {useSelector, useDispatch} from 'react-redux'
 import ScatterplotD3 from './Scatterplot-d3';
 
 // TODO: import action methods from reducers
-import { setSelectedItems, setBrushedItems } from '../../redux/ItemInteractionSlice'
+import { setSelectedItems, setBrushedItems, resetClearBrushFlag } from '../../redux/ItemInteractionSlice'
 
 function ScatterplotContainer({xAttributeName, yAttributeName}){
     const visData = useSelector(state =>state.dataSet)
     const selectedItems = useSelector(state => state.itemInteraction.selectedItems);
+    const shouldClearBrush = useSelector(state => state.itemInteraction.shouldClearBrush);
     const dispatch = useDispatch();
 
     // every time the component re-render
@@ -78,9 +79,20 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
     },[visData, xAttributeName, yAttributeName, dispatch]);// if dependencies, useEffect is called after each data update, in our case only visData changes.
 
     useEffect(()=>{
-        const scatterplotD3 = scatterplotD3Ref.current;
-        scatterplotD3.highlightSelectedItems(selectedItems);
+        if (scatterplotD3Ref.current) {
+            const scatterplotD3 = scatterplotD3Ref.current;
+            scatterplotD3.highlightSelectedItems(selectedItems);
+        }
     },[selectedItems])
+
+    // Handle brush clearing separately
+    useEffect(()=>{
+        if (shouldClearBrush && scatterplotD3Ref.current) {
+            const scatterplotD3 = scatterplotD3Ref.current;
+            scatterplotD3.clearBrush();
+            dispatch(resetClearBrushFlag());
+        }
+    },[shouldClearBrush, dispatch])
 
     return(
         <div ref={divContainerRef} className="scatterplotDivContainer col2">
