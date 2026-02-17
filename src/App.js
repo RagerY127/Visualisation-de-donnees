@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 // here import other dependencies
 import { getDataSet } from './redux/DataSetSlice'
 import ScatterplotContainer from './components/scatterplot/ScatterplotContainer';
@@ -19,6 +19,13 @@ function App() {
   useEffect(()=>{
     dispatch(getDataSet());
   },[dispatch])
+  
+  const selectedItems = useSelector(state => state.itemInteraction.selectedItems);
+  
+  // Generate display text for selected items
+  const selectedItemsText = selectedItems.length > 0 
+      ? selectedItems.map(item => item.name || item.communityname || `Community ${item.index}`).join(', ')
+      : '';
   
   return (
     <div className="App">
@@ -57,9 +64,11 @@ function App() {
           {/* Hierarchical visualization with multiple layouts */}
           <HierarchyContainer currentLayout={currentLayout} />
         </div>
-        <div style={{padding: '10px', fontSize: '12px', color: '#666'}}>
-          <p><strong>Instructions:</strong> Use brush selection on the scatterplot or click nodes in the hierarchy to explore communities. 
-          Lower crime rates indicate safer areas.</p>
+        
+        {/* Selected items display at bottom */}
+        <div className="selected-items-display">
+          <strong>Selected: </strong>
+          <span className="selected-items-text">{selectedItemsText || 'None'}</span>
         </div>
     </div>
   );

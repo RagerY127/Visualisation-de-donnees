@@ -50,8 +50,36 @@
     display: flex;
     gap: 10px;
     padding: 10px;
-    padding-top: 60px; /* Space for fixed controls */
+    padding-top: 70px; /* Space for fixed controls */
     overflow: hidden;
+    min-height: 0; /* Important for flex children */
+}
+
+.selected-items-display {
+    padding: 15px 20px;
+    background: white;
+    border-top: 2px solid #333;
+    font-size: 14px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    flex-shrink: 0; /* Prevent shrinking */
+    height: 40px; /* Fixed height */
+}
+
+.selected-items-display strong {
+    color: #333;
+    flex-shrink: 0;
+}
+
+.selected-items-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #666;
 }
 
 .col2{
@@ -61,6 +89,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     overflow: hidden;
     position: relative;
+    min-width: 0; /* Important for flex children */
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
 }
 
 .row:after {

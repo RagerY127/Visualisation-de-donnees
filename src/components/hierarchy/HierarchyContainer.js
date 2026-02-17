@@ -9,9 +9,6 @@ function HierarchyContainer({currentLayout}){
     const visData = useSelector(state =>state.dataSet)
     const selectedItems = useSelector(state => state.itemInteraction.selectedItems);
     const dispatch = useDispatch();
-    
-    // State for clicked item display
-    const [clickedItemName, setClickedItemName] = useState('');
 
     // every time the component re-render
     useEffect(()=>{
@@ -56,8 +53,6 @@ function HierarchyContainer({currentLayout}){
         const handleNodeClick = function(nodeData){
             // When clicking a node, select that community
             dispatch(setSelectedItems([nodeData]))
-            // Update clicked item name for display
-            setClickedItemName(nodeData.name || nodeData.communityname || `Community ${nodeData.index}`)
         }
         
         const handleNodeHover = function(nodeData){
@@ -83,24 +78,8 @@ function HierarchyContainer({currentLayout}){
     },[selectedItems, visData])
 
     return(
-        <div className="hierarchyDivContainer col2" style={{position: 'relative', display: 'flex', flexDirection: 'column'}}>
-            <div ref={divContainerRef} style={{flex: 1, overflow: 'hidden'}}></div>
-            {clickedItemName && (
-                <div style={{
-                    padding: '10px',
-                    background: '#f0f0f0',
-                    borderTop: '2px solid #333',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    minHeight: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    Selected: {clickedItemName}
-                </div>
-            )}
+        <div className="hierarchyDivContainer col2">
+            <div ref={divContainerRef} style={{flex: 1, width: '100%', minHeight: 0}}></div>
         </div>
     )
 }

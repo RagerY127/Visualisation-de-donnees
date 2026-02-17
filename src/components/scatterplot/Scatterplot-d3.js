@@ -2,7 +2,7 @@ import * as d3 from 'd3'
 // import { getDefaultFontSize } from '../../utils/helper';
 
 class ScatterplotD3 {
-    margin = {top: 100, right: 10, bottom: 50, left: 100};
+    margin = {top: 20, right: 20, bottom: 50, left: 80};
     size;
     height;
     width;
@@ -66,18 +66,8 @@ class ScatterplotD3 {
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
             .attr("x", -this.height / 2)
-            .attr("y", -60)
+            .attr("y", -55)
             .style("font-size", "12px")
-            .style("fill", "#333");
-
-        // Add title
-        this.svg.append("text")
-            .attr("class", "chartTitle")
-            .attr("text-anchor", "middle")
-            .attr("x", this.width / 2)
-            .attr("y", -60)
-            .style("font-size", "16px")
-            .style("font-weight", "bold")
             .style("fill", "#333");
 
         // Initialize brush
@@ -164,7 +154,6 @@ class ScatterplotD3 {
         // Update axis labels
         this.svg.select(".xAxisLabel").text(xAttribute);
         this.svg.select(".yAxisLabel").text(yAttribute);
-        this.svg.select(".chartTitle").text(`${yAttribute} vs ${xAttribute}`);
 
         this.svg.selectAll(".markerG")
             // all elements with the class .cellG (empty the first time)
