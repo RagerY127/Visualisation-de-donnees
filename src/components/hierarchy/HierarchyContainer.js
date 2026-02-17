@@ -50,9 +50,10 @@ function HierarchyContainer({currentLayout}){
             return;
         }
 
-        const handleNodeClick = function(nodeData){
-            // When clicking a node, select that community
-            dispatch(setSelectedItems([nodeData]))
+        const handleNodeClick = function(nodeDataArray){
+            // When clicking a node, select communities (can be single or multiple)
+            // nodeDataArray is already an array from D3 handlers
+            dispatch(setSelectedItems(nodeDataArray))
         }
         
         const handleNodeHover = function(nodeData){

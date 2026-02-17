@@ -80,38 +80,61 @@ class HierarchyD3 {
 
         const self = this;
         
-        // Create cells
-        const cell = this.svg.selectAll("g")
-            .data(root.leaves())
+        // Render all nodes (states + communities)
+        const nodes = this.svg.selectAll("g")
+            .data(root.descendants().filter(d => d.depth > 0))
             .join("g")
             .attr("class", "node")
-            .attr("transform", d => `translate(${d.x0},${d.y0})`)
+            .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+        // Add rectangles
+        nodes.append("rect")
+            .attr("width", d => d.x1 - d.x0)
+            .attr("height", d => d.y1 - d.y0)
+            .attr("fill", d => this.colorScale(d.depth === 1 ? d.data.state : d.parent.data.state))
+            .attr("opacity", 0.7)
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1)
             .on("click", function(event, d) {
+                event.stopPropagation();
                 if (controllerMethods.handleNodeClick) {
-                    controllerMethods.handleNodeClick(d.data);
+                    if (d.depth === 1) {
+                        // Click on state: select all communities
+                        const communities = d.children ? d.children.map(child => child.data) : [];
+                        controllerMethods.handleNodeClick(communities);
+                    } else if (d.depth === 2) {
+                        // Click on individual community
+                        controllerMethods.handleNodeClick([d.data]);
+                    }
                 }
             })
             .on("mouseenter", function(event, d) {
-                d3.select(this).select("rect")
+                d3.select(this)
                     .attr("stroke", "black")
                     .attr("stroke-width", 3);
-                if (controllerMethods.handleNodeHover) {
+                if (d.depth === 2 && controllerMethods.handleNodeHover) {
                     controllerMethods.handleNodeHover(d.data);
                 }
             })
             .on("mouseleave", function(event, d) {
-                d3.select(this).select("rect")
+                d3.select(this)
                     .attr("stroke", "#333")
                     .attr("stroke-width", 1);
             });
 
-        cell.append("rect")
-            .attr("width", d => d.x1 - d.x0)
-            .attr("height", d => d.y1 - d.y0)
-            .attr("fill", d => this.colorScale(d.parent.data.state))
-            .attr("opacity", 0.7);
-
-        // Remove text labels from cells - will be shown on click instead
+        // Add text labels only for state-level nodes
+        nodes.filter(d => d.depth === 1)
+            .append("text")
+            .attr("x", d => (d.x1 - d.x0) / 2)
+            .attr("y", d => (d.y1 - d.y0) / 2)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .text(d => d.data.name)
+            .attr("font-size", "16px")
+            .attr("font-weight", "bold")
+            .attr("fill", "white")
+            .attr("pointer-events", "none")
+            .style("text-shadow", "0 0 3px black, 0 0 3px black");
     }
 
     // Sunburst layout
@@ -151,8 +174,15 @@ class HierarchyD3 {
             .attr("opacity", d => d.depth === 0 ? 0 : 0.7)
             .attr("stroke", "white")
             .on("click", function(event, d) {
-                if (d.depth === 2 && controllerMethods.handleNodeClick) {
-                    controllerMethods.handleNodeClick(d.data);
+                if (controllerMethods.handleNodeClick) {
+                    if (d.depth === 1) {
+                        // Click on state: select all communities in that state
+                        const communities = d.children ? d.children.map(child => child.data) : [];
+                        controllerMethods.handleNodeClick(communities);
+                    } else if (d.depth === 2) {
+                        // Click on individual community
+                        controllerMethods.handleNodeClick([d.data]);
+                    }
                 }
             })
             .on("mouseenter", function(event, d) {
@@ -209,8 +239,15 @@ class HierarchyD3 {
             .attr("class", "node")
             .attr("transform", d => `translate(${d.x},${d.y})`)
             .on("click", function(event, d) {
-                if (d.depth === 2 && controllerMethods.handleNodeClick) {
-                    controllerMethods.handleNodeClick(d.data);
+                if (controllerMethods.handleNodeClick) {
+                    if (d.depth === 1) {
+                        // Click on state: select all communities in that state
+                        const communities = d.children ? d.children.map(child => child.data) : [];
+                        controllerMethods.handleNodeClick(communities);
+                    } else if (d.depth === 2) {
+                        // Click on individual community
+                        controllerMethods.handleNodeClick([d.data]);
+                    }
                 }
             })
             .on("mouseenter", function(event, d) {
@@ -277,8 +314,15 @@ class HierarchyD3 {
             .attr("class", "node")
             .attr("transform", d => `translate(${d.x},${d.y})`)
             .on("click", function(event, d) {
-                if (d.depth === 2 && controllerMethods.handleNodeClick) {
-                    controllerMethods.handleNodeClick(d.data);
+                if (controllerMethods.handleNodeClick) {
+                    if (d.depth === 1) {
+                        // Click on state: select all communities in that state
+                        const communities = d.children ? d.children.map(child => child.data) : [];
+                        controllerMethods.handleNodeClick(communities);
+                    } else if (d.depth === 2) {
+                        // Click on individual community
+                        controllerMethods.handleNodeClick([d.data]);
+                    }
                 }
             })
             .on("mouseenter", function(event, d) {
@@ -334,22 +378,31 @@ class HierarchyD3 {
         }
     }
 
-    // Highlight selected items
     highlightSelectedItems = function(selectedItems) {
+        if (!selectedItems || !Array.isArray(selectedItems)) {
+            selectedItems = [];
+        }
         const selectedIndices = new Set(selectedItems.map(d => d.index));
         
         if (this.currentLayout === 'treemap') {
             this.svg.selectAll(".node rect")
                 .attr("opacity", function() {
-                    const d = d3.select(this.parentNode).datum();
+                    const d = d3.select(this).datum();
                     if (!d || !d.data) return 0.7;
-                    if (selectedIndices.size === 0) return 0.7;
-                    return selectedIndices.has(d.data.index) ? 1 : 0.3;
+                    // State-level nodes (depth 1) always visible
+                    if (d.depth === 1) return 0.7;
+                    // Community-level nodes (depth 2) participate in highlighting
+                    if (d.depth === 2) {
+                        if (selectedIndices.size === 0) return 0.7;
+                        return selectedIndices.has(d.data.index) ? 1 : 0.3;
+                    }
+                    return 0.7;
                 })
                 .attr("stroke-width", function() {
-                    const d = d3.select(this.parentNode).datum();
+                    const d = d3.select(this).datum();
                     if (!d || !d.data) return 1;
-                    return selectedIndices.has(d.data.index) ? 3 : 1;
+                    if (d.depth === 2 && selectedIndices.has(d.data.index)) return 3;
+                    return 1;
                 });
         } else if (this.currentLayout === 'sunburst') {
             this.svg.selectAll("path.node")

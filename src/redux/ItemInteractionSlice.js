@@ -1,39 +1,34 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-
 export const itemInteractionSlice = createSlice({
   name: 'itemInteraction',
   initialState: {
-    selectedItems: [],  // Items selected via click or brush
-    hoveredItem: {},    // Item currently hovered
-    brushedItems: [],   // Items selected via brush interaction
-    shouldClearBrush: false, // Flag to trigger brush clearing
+    selectedItems: [],
+    hoveredItem: {},
+    brushedItems: [],
+    shouldClearBrush: false,
   },
   reducers: {
-    // Set selected items (for click interaction)
     setSelectedItems: (state, action) => {
-      return {...state, selectedItems: action.payload, shouldClearBrush: false}
+      const items = Array.isArray(action.payload) ? action.payload : [];
+      return {...state, selectedItems: items, shouldClearBrush: false}
     },
-    // Set brushed items (for brush interaction)
     setBrushedItems: (state, action) => {
-      return {...state, brushedItems: action.payload, selectedItems: action.payload, shouldClearBrush: false}
+      const items = Array.isArray(action.payload) ? action.payload : [];
+      return {...state, brushedItems: items, selectedItems: items, shouldClearBrush: false}
     },
-    // Set hovered item
     setHoveredItem: (state, action) => {
       return {...state, hoveredItem: action.payload}
     },
-    // Clear all selections
     clearSelections: (state) => {
       return {...state, selectedItems: [], brushedItems: [], shouldClearBrush: true}
     },
-    // Reset clear brush flag
     resetClearBrushFlag: (state) => {
       return {...state, shouldClearBrush: false}
     },
   },
 })
 
-// Action creators are generated for each case reducer function
 export const { 
   setSelectedItems, 
   setBrushedItems, 

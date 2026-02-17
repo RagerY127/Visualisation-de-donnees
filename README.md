@@ -1,12 +1,12 @@
 # Community Crime Analysis Visualization
 
-Interactive data visualization application built with React and D3.js to help users decide where to settle down based on community safety and socioeconomic factors.
+Interactive data visualization system built with React and D3.js to help users identify safe communities based on crime rates and socioeconomic factors.
 
 ## 🎯 Project Overview
 
-This project implements two synchronized visualizations:
-1. **Scatterplot with 2D Brush Interaction** - Explore relationships between income and crime rates
-2. **Hierarchical Visualization** - Navigate state→community hierarchy with multiple layout options (Treemap, Sunburst, Circle Pack, Tree)
+This application implements two synchronized interactive visualizations:
+1. **Scatterplot with 2D Brush Selection** - Analyze correlation between median income and violent crime rates
+2. **Hierarchical Visualization** - Explore state→community hierarchy with 4 different layouts (Treemap, Sunburst, Circle Pack, Tree)
 
 ## 🚀 Quick Start
 
@@ -24,26 +24,30 @@ The application will open at `http://localhost:3000`
 
 ## 📊 Features
 
-### Scatterplot Features
-- ✅ **2D Brush Selection**: Select multiple communities by dragging a rectangular brush
-- ✅ **Attribute Correlation**: Visualize Median Income vs Violent Crime Rate
-- ✅ **Interactive Highlighting**: Selected items are highlighted with increased opacity and red borders
-- ✅ **Axis Labels**: Clear labels and titles for easy interpretation
+### 🎨 Scatterplot Visualization
+- ✅ **2D Brush Selection**: Drag a rectangle to select multiple communities
+- ✅ **Correlation Analysis**: Median Income (X) vs Violent Crime Rate (Y)
+- ✅ **Visual Feedback**: Selected items highlighted with opacity and red borders
+- ✅ **Axis Labels**: Clear axis labels for easy interpretation
 
-### Hierarchical Visualization Features
-- ✅ **Multiple Layouts**: Switch between 4 different layouts:
-  - **Treemap**: Space-efficient rectangular tiles
-  - **Sunburst**: Radial circular layout
-  - **Circle Pack**: Nested circles
+### 🗺️ Hierarchical Visualization
+- ✅ **4 Layout Options**:
+  - **Treemap** ⭐ (Recommended): Space-filling rectangular tiles, optimal for 1,994 communities
+  - **Sunburst**: Radial partition layout
+  - **Circle Pack**: Nested circles with containment metaphor
   - **Tree**: Traditional node-link diagram
-- ✅ **Click Interaction**: Click on communities to select them
-- ✅ **Hover Effects**: Visual feedback on mouse hover
-- ✅ **State Grouping**: Communities organized by state
+- ✅ **Multi-Level Selection**:
+  - Click **state number** → Select all communities in that state
+  - Click **individual community** → Select single community
+- ✅ **Hover Effects**: Visual feedback on mouse interaction
+- ✅ **State Labels**: Bold numbers displayed on state-level nodes
 
-### Synchronized Interactions
-- 🔗 Selections in one view are reflected in the other
-- 🔗 Brush selection on scatterplot highlights communities in hierarchy
-- 🔗 Clicking nodes in hierarchy highlights points in scatterplot
+### 🔗 Synchronized Interactions
+- ✅ **Bidirectional Highlighting**: Selections propagate between both views
+- ✅ **Brush → Hierarchy**: Communities within brush area highlighted in hierarchy
+- ✅ **Click → Scatterplot**: Selected communities/states highlighted in scatterplot
+- ✅ **Clear All Button**: Red button (top-left) to reset all selections and brush
+- ✅ **Selection Display**: Bottom bar shows all selected community names (comma-separated, ellipsis if too long)
 
 ## 📁 Project Structure
 
@@ -51,19 +55,28 @@ The application will open at `http://localhost:3000`
 src/
 ├── components/
 │   ├── scatterplot/
-│   │   ├── ScatterplotContainer.js    # React container
-│   │   ├── Scatterplot-d3.js          # D3 visualization class
-│   │   └── Scatterplot.css            # Styles
+│   │   ├── ScatterplotContainer.js    # React container with hooks
+│   │   ├── Scatterplot-d3.js          # D3 rendering + brush logic
+│   │   └── Scatterplot.css
 │   └── hierarchy/
-│       ├── HierarchyContainer.js      # React container
-│       ├── Hierarchy-d3.js            # D3 visualization class
-│       └── Hierarchy.css              # Styles
+│       ├── HierarchyContainer.js      # React container with layout switching
+│       ├── Hierarchy-d3.js            # D3 hierarchical layouts (4 types)
+│       └── Hierarchy.css
 ├── redux/
-│   ├── DataSetSlice.js                # Data loading
-│   ├── ItemInteractionSlice.js        # Selection state
+│   ├── DataSetSlice.js                # Async data loading (PapaParse)
+│   ├── ItemInteractionSlice.js        # Selection state management
 │   └── store.js                       # Redux store configuration
-├── App.js                             # Main application
+├── App.js                             # Main app + global controls
+├── App.css                            # Global layout styles
 └── index.js                           # Entry point
+
+public/
+└── data/
+    └── communities.csv                # US Communities Crime Dataset (1,994 records)
+
+Root Files:
+├── Rapport_VDD_LIU_Yao.pdf           # Complete academic report (French)
+└── README.md                          # This file
 ```
 
 ## 🛠️ Technical Stack
@@ -99,36 +112,39 @@ src/
 - **Hierarchy**: State → Community (2 levels)
 - **Target Variable**: ViolentCrimesPerPop
 
-## 🎨 User Interface
+## 🎨 User Interface Layout
 
-### Scatterplot
-- **X-axis**: Median Income (medIncome)
-- **Y-axis**: Violent Crimes Per Population (ViolentCrimesPerPop)
-- **Interaction**: Drag to create brush selection
-- **Visual Encoding**: 
-  - Position: Income and crime rate
-  - Opacity: 0.3 (unselected) to 1.0 (selected)
-  - Stroke: Red border for selected items
+```
+┌─────────────────────────────────────────────────────────────┐
+│  [Clear All]                    [Treemap] [Sunburst] etc.  │  ← Controls
+├─────────────────────┬───────────────────────────────────────┤
+│                     │                                       │
+│   Scatterplot       │     Hierarchical Visualization        │
+│   (medIncome vs     │     (Treemap/Sunburst/Pack/Tree)     │
+│    ViolentCrimes)   │                                       │
+│                     │                                       │
+│   [Brush Selection] │     [Click to Select]                │
+│                     │                                       │
+├─────────────────────┴───────────────────────────────────────┤
+│ Selected: Community1, Community2, Community3...             │  ← Selection Display
+└─────────────────────────────────────────────────────────────┘
+```
 
-### Hierarchy Visualization
-- **Layout Controls**: Buttons to switch between layouts
-- **Color**: Different colors for each state
-- **Size**: Represents crime rate in treemap and circle pack
-- **Interaction**: Click nodes to select, hover for preview
+### Visual Encodings
 
-## 📝 Report
+**Scatterplot**:
+- **X-axis**: medIncome (0-1 normalized)
+- **Y-axis**: ViolentCrimesPerPop (0-1 normalized)
+- **Opacity**: 0.3 (default) → 1.0 (selected)
+- **Stroke**: Red 2px border when selected
+- **Radius**: 3px (fixed to avoid overplotting)
 
-See `Assignment2_Report.md` for detailed analysis including:
-- Data characterization and user tasks
-- Design rationale for each visualization
-- Comparison of hierarchical layouts
-- Preferred layout justification
-- Technical implementation details
+**Hierarchy**:
+- **Color**: Categorical scale by state (consistent across layouts)
+- **Size**: Proportional to ViolentCrimesPerPop (treemap, circle pack)
+- **Angle/Position**: Hierarchical structure (sunburst, tree)
+- **Labels**: Bold state numbers on top-level nodes
 
-**Note**: Convert `Assignment2_Report.md` to PDF before submission using tools like:
-- Pandoc: `pandoc Assignment2_Report.md -o Assignment2_Report.pdf`
-- Online converters: markdown-to-pdf.com
-- VS Code extensions: Markdown PDF
 
 ## 🎓 Assignment Requirements Met
 
@@ -141,55 +157,65 @@ See `Assignment2_Report.md` for detailed analysis including:
 - ✅ Global update pattern with join()
 - ✅ 2-page report with 4 required sections
 
-## 📦 Submission Checklist
+## 🔍 User Workflow
 
-- [ ] Code pushed to public GitHub repository
-- [ ] Application runs with `npm install` + `npm start`
-- [ ] Report (PDF) at root of repository
-- [ ] Repository URL submitted on Arche
+### Scenario: Finding Safe Communities to Settle Down
 
-## 🔍 How to Use
+**Step 1: Explore Overall Correlation**
+- Observe the scatterplot: negative trend visible (↑income = ↓crime)
+- Identify the "ideal zone": lower-right corner (high income, low crime)
 
-1. **Explore Income-Crime Relationship**: 
-   - Observe the scatterplot to see how median income relates to crime rates
-   - Lower right area = high income, low crime (ideal)
+**Step 2: Select Zone with Brush**
+- Drag a rectangle on scatterplot to select communities in the ideal zone
+- Watch them highlight in the hierarchy view
+- Check bottom bar to see community names
 
-2. **Select Communities of Interest**:
-   - Drag a rectangle on the scatterplot to select multiple communities
-   - Watch the hierarchy visualization highlight selected communities
+**Step 3: Analyze by State**
+- Switch to **Treemap** layout (recommended for overview)
+- Large state rectangles = high total crime (avoid)
+- Small tiled states = safer (consider)
 
-3. **Switch Hierarchy Layouts**:
-   - Click layout buttons (Treemap, Sunburst, Pack, Tree) to compare different views
-   - Each layout offers unique insights into the data
+**Step 4: Drill Down by State**
+- Click a **state number** on treemap to select all its communities
+- Scatterplot shows their distribution
+- Assess if that state has consistently safe communities
 
-4. **Drill Down by State**:
-   - Click on states or communities in the hierarchy
-   - See their position in the scatterplot
+**Step 5: Select Specific Community**
+- Click on individual small rectangles
+- View its position on scatterplot
+- Note the community name at bottom
 
-5. **Make Decisions**:
-   - Identify states with many safe, affluent communities
-   - Select specific communities for further research
+**Step 6: Compare Layouts**
+- Try **Sunburst** for proportional view of states
+- Try **Circle Pack** for aesthetic containment view
+- Try **Tree** to explore specific branches
+
+**Step 7: Reset and Refine**
+- Click **Clear All** (red button) to reset
+- Repeat with different brush selections
+- Build a shortlist of candidate communities
+
+**Tip**: States with many small tiles in Treemap = distributed safe communities = good candidates!
 
 ## 🐛 Troubleshooting
 
 **Issue**: Application doesn't start
-- **Solution**: Ensure Node.js is installed, run `npm install` first
+- **Solution**: Ensure Node.js is installed, run `npm install` then `npm start`
+
+**Issue**: "selectedItems.map is not a function" error
+- **Solution**: Fixed in latest version with type checking. Clear browser cache and refresh.
 
 **Issue**: Visualizations don't appear
-- **Solution**: Check browser console for errors, ensure data loads correctly
+- **Solution**: Check browser console, ensure `communities.csv` loads correctly
 
 **Issue**: Brush selection not working
-- **Solution**: Make sure to drag (not click) on the scatterplot
+- **Solution**: Must **drag** (not click) on scatterplot to create brush rectangle
 
-## 📄 License
+**Issue**: Can't click on Treemap
+- **Solution**: Fixed in latest version. Now supports clicking both state-level and community-level rectangles.
 
-This project is created for academic purposes as part of Assignment 2.
+**Issue**: Brush doesn't clear when clicking "Clear All"
+- **Solution**: Fixed with `shouldClearBrush` flag mechanism in Redux.
 
-## 👨‍💻 Author
-
-**Date**: February 2026
-**Course**: Data Visualization Development
-
----
-
-**Note**: This README provides technical documentation. For design rationale and analysis, please refer to `Assignment2_Report.md`.
+**Issue**: Performance issues with 1,994 points
+- **Solution**: Optimized with D3 join pattern and fixed radius (3px)
