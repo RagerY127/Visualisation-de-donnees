@@ -1,4 +1,4 @@
-import './Vis.css'
+import './VisContainer.css'
 import { useEffect, useRef } from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 
@@ -18,7 +18,7 @@ function VisContainer(){
     const divContainerRef=useRef(null);
     const visD3Ref = useRef(null)
 
-    const getChartSize = function(){
+    const getCharSize = function(){
         // fixed size
         // return {width:900, height:900};
         // getting size from parent item
@@ -30,14 +30,14 @@ function VisContainer(){
             height=divContainerRef.current.offsetHeight;
             // height = '100%';
         }
-        return {width:width, height:height};
+        return {width:width,height:height};
     }
 
     // did mount called once the component did mount
     useEffect(()=>{
         console.log("VisContainer useEffect [] called once the component did mount");
         const visD3 = new VisD3(divContainerRef.current);
-        visD3.create({size:getChartSize()});
+        visD3.create({size:getCharSize()});
         visD3Ref.current = visD3;
         return ()=>{
             // did unmout, the return function is called once the component did unmount (removed for the screen)
