@@ -28,35 +28,4 @@
     stroke-width: 1.5px;
 }
 
-.hierarchy-controls {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: white;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 1000;
-}
-
-.hierarchy-controls button {
-    margin: 5px;
-    padding: 8px 16px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    background: white;
-    border-radius: 4px;
-}
-
-.hierarchy-controls button.active {
-    background: steelblue;
-    color: white;
-}
-
-.hierarchy-controls button:hover {
-    background: #f0f0f0;
-}
-
-.hierarchy-controls button.active:hover {
-    background: #4682b4;
-}
+/* Hierarchy controls are now in App.css as global controls */

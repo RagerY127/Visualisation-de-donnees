@@ -111,12 +111,7 @@ class HierarchyD3 {
             .attr("fill", d => this.colorScale(d.parent.data.state))
             .attr("opacity", 0.7);
 
-        cell.append("text")
-            .attr("x", 3)
-            .attr("y", 13)
-            .text(d => d.data.name)
-            .attr("font-size", "10px")
-            .attr("fill", "black");
+        // Remove text labels from cells - will be shown on click instead
     }
 
     // Sunburst layout

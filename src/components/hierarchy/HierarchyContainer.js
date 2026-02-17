@@ -5,13 +5,13 @@ import {useSelector, useDispatch} from 'react-redux'
 import HierarchyD3 from './Hierarchy-d3';
 import { setSelectedItems, setHoveredItem } from '../../redux/ItemInteractionSlice'
 
-function HierarchyContainer(){
+function HierarchyContainer({currentLayout}){
     const visData = useSelector(state =>state.dataSet)
     const selectedItems = useSelector(state => state.itemInteraction.selectedItems);
     const dispatch = useDispatch();
     
-    // State for layout selection
-    const [currentLayout, setCurrentLayout] = useState('treemap');
+    // State for clicked item display
+    const [clickedItemName, setClickedItemName] = useState('');
 
     // every time the component re-render
     useEffect(()=>{
@@ -56,6 +56,8 @@ function HierarchyContainer(){
         const handleNodeClick = function(nodeData){
             // When clicking a node, select that community
             dispatch(setSelectedItems([nodeData]))
+            // Update clicked item name for display
+            setClickedItemName(nodeData.name || nodeData.communityname || `Community ${nodeData.index}`)
         }
         
         const handleNodeHover = function(nodeData){
@@ -80,38 +82,25 @@ function HierarchyContainer(){
         }
     },[selectedItems, visData])
 
-    const handleLayoutChange = (layout) => {
-        setCurrentLayout(layout);
-    }
-
     return(
-        <div ref={divContainerRef} className="hierarchyDivContainer col2" style={{position: 'relative'}}>
-            <div className="hierarchy-controls">
-                <button 
-                    className={currentLayout === 'treemap' ? 'active' : ''}
-                    onClick={() => handleLayoutChange('treemap')}
-                >
-                    Treemap
-                </button>
-                <button 
-                    className={currentLayout === 'sunburst' ? 'active' : ''}
-                    onClick={() => handleLayoutChange('sunburst')}
-                >
-                    Sunburst
-                </button>
-                <button 
-                    className={currentLayout === 'pack' ? 'active' : ''}
-                    onClick={() => handleLayoutChange('pack')}
-                >
-                    Circle Pack
-                </button>
-                <button 
-                    className={currentLayout === 'tree' ? 'active' : ''}
-                    onClick={() => handleLayoutChange('tree')}
-                >
-                    Tree
-                </button>
-            </div>
+        <div className="hierarchyDivContainer col2" style={{position: 'relative', display: 'flex', flexDirection: 'column'}}>
+            <div ref={divContainerRef} style={{flex: 1, overflow: 'hidden'}}></div>
+            {clickedItemName && (
+                <div style={{
+                    padding: '10px',
+                    background: '#f0f0f0',
+                    borderTop: '2px solid #333',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    minHeight: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    Selected: {clickedItemName}
+                </div>
+            )}
         </div>
     )
 }
